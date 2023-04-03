@@ -13,6 +13,8 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     public event Action OnAttack;
     public event Action OnDamaged;
     public event Action OnDestroyed;
+
+    private Camera cam;
     
     public void Damage(int amount)
     {
@@ -20,7 +22,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     }
 
     public GameObject bulletPrefab;
-
+    public BulletHandler bulletHandler;
     [SerializeField] private Vector3 velocity;
     [SerializeField] private Vector2 mousePosition;
     [SerializeField]
@@ -61,19 +63,14 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     {
          OnAttack?.Invoke();
 
-         GameObject bullet = Instantiate(bulletPrefab);
-        
-         bullet.transform.position = this.transform.position + (this.transform.forward * 2);
-         //FIRE
-         Rigidbody rb = bullet.GetComponent<Rigidbody>();
-         rb.AddForce(transform.forward* 12f, ForceMode.Impulse);
+         bulletHandler.FireBullet(transform.forward);
     }
 
     public void Handle_PlayerMove(Dictionary<string, object> message)
     {
         Vector2 moveVector = (Vector2) message["value"];
         // do something for player move
-        Debug.Log("message" + (Vector2) message["value"] + " " + (String)message["playerId"]);
+         
         Move(new Vector2(moveVector.y, -moveVector.x));
     }
     void SetupListener()
@@ -89,22 +86,16 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
 
     void Handle_PlayerLook (Dictionary<string, object> message)
     {
-        
         mousePosition = (Vector2) message["value"];
-        Vector2 playerPosition = Camera.main.WorldToScreenPoint(transform.position);
-        
-       
-        Debug.Log("look vector " + mousePosition);
-        // Convert the mouse position to world coordinates
-        //Vector3 worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x,   mousePosition.y, -38.4f));
-
-        // Get the direction from the object to the mouse position
-       // lookVector = worldMousePosition - transform.position;
+        Vector2 playerPosition = cam.WorldToScreenPoint(transform.position);
     }
     
     private void OnEnable()
     {
         Invoke("SetupListener", .1f);
+        cam = Camera.main;
+        Debug.Log("bulletHandler " + bulletHandler);
+        bulletHandler.FillQuiver(10);
     }
 
     private void OnDisable()
@@ -115,7 +106,6 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
             EventManager.StopListening("PlayerStop", Handle_PlayerMove);
             EventManager.StopListening("PlayerLook", Handle_PlayerLook);
             EventManager.StopListening("PlayerFire", Attack);
-            
         }
     }
     public void Move(Vector2 moveVector)
@@ -132,7 +122,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
        
 
         // Convert the mouse position to world coordinates
-        Vector3 worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.y - transform.position.y));
+        Vector3 worldMousePosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.transform.position.y - transform.position.y));
 
         // Get the direction from the object to the mouse position, but only on the y-axis
         Vector3 direction = worldMousePosition - transform.position;
@@ -144,5 +134,6 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
 
     public Player(ISpecialStrategy specialStrategy, int health, int score, bool canMove) : base(specialStrategy, health, score, canMove)
     {
+        
     }
 }
