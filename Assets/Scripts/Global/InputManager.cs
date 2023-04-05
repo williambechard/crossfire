@@ -75,7 +75,7 @@ public class InputManager : MonoBehaviour
     public void OnMove(InputAction.CallbackContext value)
     {
         moveVector = value.ReadValue<Vector2>().normalized;
-        Debug.Log("player move "+ moveVector);
+         
         if (EventManager.instance != null)
             EventManager.TriggerEvent("PlayerMove", new Dictionary<string, object> { { "value", moveVector }, {"playerId", "1"} });
     }

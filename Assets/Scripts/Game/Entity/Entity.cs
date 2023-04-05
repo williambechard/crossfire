@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public interface IMovable
@@ -13,11 +14,16 @@ public interface IMovable
 
 public interface IAttack
 {
-     
     public event Action OnAttack;
     public void Attack(Dictionary<string, object> message);
 }
 
+public interface IDeactivate
+{
+    public bool IsIDDependant{get; set;}
+    public string Id { get; set; }
+    public void DeActivate( [CanBeNull] string id = null);
+}
 public interface IDamageable
 {
     public int Health{get; set;}

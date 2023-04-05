@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class BulletHandler : MonoBehaviour
 {
-    [SerializeField]
-    int numberOfBullets;
-
+    
+    public int numberOfBullets;
+    public Player player;
     [SerializeField] private float fireForce;
     
     public GameObject bulletPrefab;
     public GameObject bulletQuiverParent;
     
-    [SerializeField] private List<Bullet> quiver = new List<Bullet>();
+    public List<Bullet> quiver = new List<Bullet>();
     
-   
+ 
     //add bullets to quiver
     //  to remove bullets may be best done at fire time (a check
     //  against quiver.count and numberofBullets before firing)
@@ -27,12 +27,21 @@ public class BulletHandler : MonoBehaviour
             Debug.Log("Filling quiver " + total);
             for (int i = 0; i < total; i++)
             {
-                Debug.Log("loop " + i.ToString());
                 GameObject bullet = Instantiate(bulletPrefab);
-                bullet.GetComponent<Bullet>().DeActivateBullet();
+                bullet.GetComponent<Bullet>().DeActivate();
                 quiver.Add(bullet.GetComponent<Bullet>());
             }
         }
+    }
+
+    public void ReportBullets(int activeBullets)
+    {
+        //let ui know
+        
+            float slider = (float)activeBullets / (float)numberOfBullets;
+            EventManager.TriggerEvent("BulletUpdate",
+                new Dictionary<string, object> { { "player", player.id}, {"slider", slider}  });
+         
     }
     
     //fire a bullet
@@ -48,15 +57,24 @@ public class BulletHandler : MonoBehaviour
             else inactiveBullets.Add(bullet);
         }
 
-        //only fire if we are under oour number of bullets threshold
+        //only fire if we are under our number of bullets threshold
         if (activeBullets.Count < numberOfBullets)
         {
             Bullet bullet = inactiveBullets[0];
             bullet.ActivateBullet();
-            
+            bullet.bulletHandler = this;
+            bullet.Id = player.id;
             bullet.transform.position = transform.parent.position;
             //FIRE
-            bullet.rb.AddForce(forwardVector* fireForce, ForceMode.Impulse);
-        } 
+            bullet.rb.AddForce(forwardVector * fireForce, ForceMode.Impulse);
+            
+            ReportBullets(activeBullets.Count+1);
+        }
+        else
+        {
+            //out of bullets effect!
+            EventManager.TriggerEvent("OutOfBullets",
+                new Dictionary<string, object> { { "player", player.id}  });
+        }
     }
 }

@@ -1,14 +1,14 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager gameManager;
-    public int currentFloor;
-    public int Health = 3;
-    public int Strength = 1;
-    public float Speed = 1.75f;
-    public float XP;
-
+    public Player P1;
+    public Player P2;
+    public SpawnTarget SpawnTarget1;
+    public SpawnTarget SpawnTarget2;
+    
     public static GameManager instance
     {
         get
@@ -23,8 +23,6 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    gameManager.Init();
-
                     //  Sets this to not be destroyed when reloading scene
                     DontDestroyOnLoad(gameManager);
                 }
@@ -33,9 +31,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        Invoke("Init", 1f);
+    }
 
     void Init()
     {
-        currentFloor = 1;
+        Debug.Log("Init");
+        // kick off init state
+        SpawnTarget[] allSpawners = FindObjectsOfType<SpawnTarget>();
+        
+        foreach (SpawnTarget spawner in allSpawners)
+        {
+            switch (spawner.targetId)
+            {
+                case "1":
+                    SpawnTarget1 = spawner;
+                    break;
+                case "2":
+                    SpawnTarget2 = spawner;
+                    break;
+            }
+            spawner.Spawn();
+        }
+        
+        Player[] allPlayers = FindObjectsOfType<Player>();
+        foreach (Player player in allPlayers)
+        {
+            switch (player.id)
+            {
+                case"1":
+                    P1 = player;
+                    break;
+                case "2":
+                    P2 = player;
+                    break;
+            }
+        }
+
+      
+       
+
     }
 }

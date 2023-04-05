@@ -21,6 +21,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
         throw new NotImplementedException();
     }
 
+    public string id;
     public GameObject bulletPrefab;
     public BulletHandler bulletHandler;
     [SerializeField] private Vector3 velocity;
@@ -50,7 +51,13 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     public int Score
     {
         get { return score; }
-        set { score = value; }
+        set
+        {
+            score = value; 
+            
+            if (EventManager.instance != null)
+                EventManager.TriggerEvent("UpdateScore", new Dictionary<string, object> {{"player", id}, {"score", value}});
+        }
     }
 
     public bool CanMove
@@ -94,7 +101,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     {
         Invoke("SetupListener", .1f);
         cam = Camera.main;
-        Debug.Log("bulletHandler " + bulletHandler);
+        bulletHandler.player = this;
         bulletHandler.FillQuiver(10);
     }
 
@@ -110,7 +117,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     }
     public void Move(Vector2 moveVector)
     {
-        velocity = (new UnityEngine.Vector3(moveVector.x, 0, moveVector.y) * Speed);
+        velocity = (new UnityEngine.Vector3(moveVector.x, RigidBody.velocity.y, moveVector.y) * Speed);
     }
 
     private void FixedUpdate()
@@ -119,13 +126,12 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     }
 
     private void Update() {
-       
-
         // Convert the mouse position to world coordinates
-        Vector3 worldMousePosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.transform.position.y - transform.position.y));
+        var position = transform.position;
+        Vector3 worldMousePosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.transform.position.y - position.y));
 
         // Get the direction from the object to the mouse position, but only on the y-axis
-        Vector3 direction = worldMousePosition - transform.position;
+        Vector3 direction = worldMousePosition - position;
         direction.y = 0;
 
         // Rotate the object to face the mouse position
