@@ -68,17 +68,23 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
 
     public void Attack(Dictionary<string, object> message)
     {
-         OnAttack?.Invoke();
+        if (CanMove)
+        {
+            OnAttack?.Invoke();
 
-         bulletHandler.FireBullet(transform.forward);
+            bulletHandler.FireBullet(transform.forward);
+        }
     }
 
     public void Handle_PlayerMove(Dictionary<string, object> message)
     {
-        Vector2 moveVector = (Vector2) message["value"];
-        // do something for player move
-         
-        Move(new Vector2(moveVector.y, -moveVector.x));
+        if (CanMove)
+        {
+            Vector2 moveVector = (Vector2)message["value"];
+            // do something for player move
+
+            Move(new Vector2(moveVector.y, -moveVector.x));
+        }
     }
     void SetupListener()
     {

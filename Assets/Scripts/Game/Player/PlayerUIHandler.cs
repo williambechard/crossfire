@@ -11,17 +11,25 @@ public class PlayerUIHandler : MonoBehaviour
     public Slider P2slider;
     public UnifyText P1Text;
     public UnifyText P2Text;
+    public GameObject CountDownPrefab;
     
     void SetupListener()
     {
         if (EventManager.instance != null)
         {
+            EventManager.StartListening("Init", Handle_GameState_Init);
             EventManager.StartListening("UpdateScore", Handle_Score);
             EventManager.StartListening("BulletUpdate", Handle_Bullets);
             EventManager.StartListening("OutOfBullets", Handle_OutOfBullets);
         }else Debug.Log("event manager is null");
     }
 
+    public void Handle_GameState_Init(Dictionary<string, object> message)
+    {
+        //spawn the countdown prefab
+        Instantiate(CountDownPrefab, transform);
+    }
+    
     public void Handle_Score(Dictionary<string, object> message)
     {
         //determine player and adjust ui appropriately
@@ -71,6 +79,7 @@ public class PlayerUIHandler : MonoBehaviour
 
     private void OnDisable()
     {
+        EventManager.StopListening("Init", Handle_GameState_Init);
         EventManager.StopListening("UpdateScore", Handle_Score);
         EventManager.StopListening("BulletUpdate", Handle_Bullets);
         EventManager.StopListening("OutOfBullets", Handle_OutOfBullets);

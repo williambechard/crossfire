@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -131,6 +134,7 @@ GameObject:
   - component: {fileID: 753554323}
   - component: {fileID: 753554324}
   - component: {fileID: 753554325}
+  - component: {fileID: 753554326}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -177,3 +181,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112aa072ee85b7645b61c99d786e0386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  P1: {fileID: 0}
+  P2: {fileID: 0}
+  SpawnTarget1: {fileID: 0}
+  SpawnTarget2: {fileID: 0}
+  CurrentState: 0
+--- !u!95 &753554326
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753554322}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7938cc9ea2d2b4c488b8e932caa318ad, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
