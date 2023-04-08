@@ -86,15 +86,17 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
             Move(new Vector2(moveVector.y, -moveVector.x));
         }
     }
-    void SetupListener()
+  
+    IEnumerator WaitForEventManager()
     {
-        if (EventManager.instance != null)
+        while(EventManager.instance == null)
         {
-            EventManager.StartListening("PlayerMove", Handle_PlayerMove);
-            EventManager.StartListening("PlayerStop", Handle_PlayerMove);
-            EventManager.StartListening("PlayerLook", Handle_PlayerLook);
-            EventManager.StartListening("PlayerFire", Attack);
-        }else Debug.Log("event manager is null");
+            yield return null;
+        }
+        EventManager.StartListening("PlayerMove", Handle_PlayerMove);
+        EventManager.StartListening("PlayerStop", Handle_PlayerMove);
+        EventManager.StartListening("PlayerLook", Handle_PlayerLook);
+        EventManager.StartListening("PlayerFire", Attack);
     }
 
     void Handle_PlayerLook (Dictionary<string, object> message)
@@ -105,7 +107,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     
     private void OnEnable()
     {
-        Invoke("SetupListener", .1f);
+        StartCoroutine(WaitForEventManager());
         cam = Camera.main;
         bulletHandler.player = this;
         bulletHandler.FillQuiver(10);
