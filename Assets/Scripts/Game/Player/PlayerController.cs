@@ -9,14 +9,21 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 1.0f;
     private bool canMove = false;
 
-    void SetupListener()
+    
+    
+    IEnumerator WaitForEventManager()
     {
+        while(EventManager.instance == null)
+        {
+            yield return null;
+        }
         EventManager.StartListening("PlayerMove", Handle_PlayerMove);
     }
 
     private void OnEnable()
     {
-        Invoke("SetupListener", .00001f);
+        StartCoroutine(WaitForEventManager());
+        
     }
 
     private void OnDisable()

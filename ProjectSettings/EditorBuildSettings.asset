@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/Scenes/Menu/MainMenu.unity
+    guid: ff0549bb26aeacf48b32ad2fc7484841
+  - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: 930d67e710575384a8f811ebb37fbfe1
   - enabled: 1
@@ -29,4 +32,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game/GameManager.unity
     guid: dd8536fd6eea10f438807ecc46c1eeed
+  - enabled: 1
+    path: Assets/Scenes/Game/NetworkManager.unity
+    guid: ae5f1830cb8a786419d130c0ba8a03d2
+  - enabled: 1
+    path: Assets/Scenes/Menu/Lobby.unity
+    guid: 955c5152fea178b4dbc72bbcbcd9d7fb
   m_configObjects: {}

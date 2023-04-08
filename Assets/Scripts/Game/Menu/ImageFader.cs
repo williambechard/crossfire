@@ -11,7 +11,7 @@ public class ImageFader : MonoBehaviour {
     private Color endColor;
     private Color fadeColor = new Color(77f/255, 77/255f, 77f/255, 1);
     private Color fullColor = new Color(1, 1, 1, 1);
- 
+    public Button button;
     void Start () {
         // Get the Image component and store it
         image = GetComponent<Image>();
@@ -21,22 +21,28 @@ public class ImageFader : MonoBehaviour {
     }
     
     public void FadeOut() {
-        StopCoroutine(FadeImage());
-        startColor = image.color;
-        endColor = fadeColor;
-        StartCoroutine(FadeImage());
+        if (button.interactable)
+        {
+            StopCoroutine(FadeImage());
+            startColor = image.color;
+            endColor = fadeColor;
+            StartCoroutine(FadeImage());
+        }
     }
     
     public void FadeIn() {
-        
-        StopCoroutine(FadeImage());
-        startColor = image.color;
-        endColor = fullColor;
-        StartCoroutine(FadeImage());
+        if (button.interactable)
+        {
+            StopCoroutine(FadeImage());
+            startColor = image.color;
+            endColor = fullColor;
+            StartCoroutine(FadeImage());
+        }
     }
     
-    IEnumerator FadeImage() {
-        
+    IEnumerator FadeImage()
+    {
+        yield return new WaitForSeconds(.01f);
         float elapsedTime = 0f;
         while (elapsedTime < fadeDuration) {
             elapsedTime += Time.deltaTime;

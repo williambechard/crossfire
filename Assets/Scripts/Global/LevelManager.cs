@@ -52,10 +52,10 @@ public class LevelManager : MonoBehaviour
         lScene(SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive));
     }
 
-    public void LoadSceneAdditiveInstantly(string sceneName)
+    public void LoadSceneOnly(string sceneName)
     {
         lastLoadedScene = sceneName;
-        SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
     }
 
     AsyncOperation nextScene;
