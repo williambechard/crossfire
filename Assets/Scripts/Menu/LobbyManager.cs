@@ -11,6 +11,8 @@ using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
 {
+    public GameObject PlayBTNArea;
+    public TextMeshProUGUI RoomNameText;
     public VerticalLayoutGroup vGroup;
     public TextMeshProUGUI text;
     public RoomInfo RoomInfoPrefab;
@@ -23,22 +25,9 @@ public class LobbyManager : MonoBehaviour
     {
         ClearList();
         JoinLobby();
-        //StartNetwork();
-    }
-
-    private async Task StartNetwork()
-    {
-        
-        var result = await NetworkManager.Instance.Runner.StartGame(new StartGameArgs()
-        {
-            GameMode = GameMode.AutoHostOrClient,
-            //SessionName = "TestRoom",
-            SessionName = "TestRoom",
-            CustomLobbyName = "OurLobbyID",
-        });
-        //JoinLobby();
-    }
     
+    }
+ 
     public void ClearList()
     {
         foreach (Transform child in vGroup.transform)
@@ -62,17 +51,35 @@ public class LobbyManager : MonoBehaviour
 
     public void Handle_JoinRoom(Dictionary<string, object> message)
     {
+        Debug.Log("HandleJoin room called");
         SessionInfo sessionInfo = (SessionInfo) message["value"];
-        
+        NetworkManager.Instance.JoinGame(sessionInfo.Name);
     }
     
     void Handle_Info(Dictionary<string, object> message)
     {
-        string result = (string) message["value"];
-        info.text = result;
+        List<SessionInfo> sessionInfos = (List<SessionInfo>) message["value"];
+    
+        if(sessionInfos.Count==0) OnNoGameSessionFound();
+        else
+        {
+            ClearList();
+            foreach (SessionInfo sessionInfo in sessionInfos)
+            {
+                Debug.Log(sessionInfo.Name);
+                AddToList(sessionInfo);
+            }
+        }
         refreshBtn.gameObject.SetActive(true);
         info.GetComponent<BlinkingTextSimple>().isRunning = false;
     }
+    
+    void Handle_SecondPlayerJoined(Dictionary<string, object> message)
+    {
+        PlayBTNArea.SetActive(true);
+    }
+
+ 
     
     IEnumerator WaitForEventManager()
     {
@@ -81,12 +88,14 @@ public class LobbyManager : MonoBehaviour
             yield return null;
         }
         EventManager.StartListening("JoinRoom", Handle_JoinRoom);
+        EventManager.StartListening("SecondPlayerJoined", Handle_SecondPlayerJoined);
         EventManager.StartListening("InfoUpdate", Handle_Info);
     }
 
     private void OnDisable()
     {
         EventManager.StopListening("JoinRoom", Handle_JoinRoom);
+        EventManager.StopListening("SecondPlayerJoined", Handle_SecondPlayerJoined);
         EventManager.StopListening("InfoUpdate", Handle_Info);
     }
 
@@ -97,10 +106,14 @@ public class LobbyManager : MonoBehaviour
 
     public void OnNoGameSessionFound()
     {
-        info.gameObject.SetActive(true);
         info.text = "No game session found";
     }
 
+    public void RefreshLobby()
+    {
+      
+    }
+    
     public void OnSearchingForSessions()
     {
         info.gameObject.SetActive(true);
@@ -109,14 +122,12 @@ public class LobbyManager : MonoBehaviour
 
     private async Task JoinLobby()
     {
-        string LobbyID= "OurLobbyID";
-
-        var result = await NetworkManager.Instance.Runner.JoinSessionLobby(SessionLobby.Custom, LobbyID);
+        var result = await NetworkManager.Instance.Runner.JoinSessionLobby(SessionLobby.Custom, "OurLobbyID");
     }
 
     public void CreateGame()
     {
-        NetworkManager.Instance.CreateGame(createRoomName.text, "Main");
+        NetworkManager.Instance.CreateGame(createRoomName.text, "Lobby");
     }
 
     public void OnJoinLobby()
@@ -124,5 +135,9 @@ public class LobbyManager : MonoBehaviour
         var clientTask = JoinLobby();
     }
 
+    public void SetRoomNameText()
+    {
+        RoomNameText.text = createRoomName.text;
+    }
 
 }

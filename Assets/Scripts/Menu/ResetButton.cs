@@ -19,6 +19,21 @@ public class ResetButton : MonoBehaviour
             altText = altButton.GetComponentInChildren<TextMeshProUGUI>();
     }
 
+    public void LoadScene()
+    {
+        StartCoroutine(WaitForNetwork());
+    }
+
+    IEnumerator WaitForNetwork()
+    {
+        while(NetworkManager.Instance.Runner==null)
+        {
+            yield return null;
+        }
+        
+        LevelManager.Instance.LoadScene("Lobby");
+    }
+    
     public void OnButtonClick()
     {
         Debug.Log("Button clicked");

@@ -4,15 +4,48 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+public struct NetworkInputData : INetworkInput
+{
+    public Vector3 direction;
+}
 
 public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
 {
     public static NetworkManager Instance;
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
+    
+    public NetworkSceneManagerDefault sceneManager;
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        //does player = this player?
+        Debug.Log(player.PlayerId);
+
+        if(player.PlayerId!=1) //<- 1 is the host
+            EventManager.TriggerEvent("SecondPlayerJoined", null);
+    }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
+        var data = new NetworkInputData();
+
+        if (Input.GetKey(KeyCode.W))
+            data.direction += Vector3.forward;
+
+        if (Input.GetKey(KeyCode.S))
+            data.direction += Vector3.back;
+
+        if (Input.GetKey(KeyCode.A))
+            data.direction += Vector3.left;
+
+        if (Input.GetKey(KeyCode.D))
+            data.direction += Vector3.right;
+
+        input.Set(data);
+    }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { Debug.Log("Connected to server");}
@@ -23,16 +56,7 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
-        if (sessionList.Count == 0)
-        {
-            if(EventManager.instance!=null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> {{"value", "No Rooms Found..."} });
-        }
-        else
-        {
-            if(EventManager.instance!=null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> {{"value", sessionList.Count + " Rooms Found."} });
-        }
-        
-        
+        if(EventManager.instance!=null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> {{"value", sessionList} });
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
@@ -42,6 +66,7 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
 
     public NetworkRunner Runner;
 
+    /*
     public async void StartGame(GameMode mode, SessionInfo sessionInfo)
     {
         // Start or join (depends on gamemode) a session with a specific name
@@ -54,7 +79,7 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
             Scene = SceneManager.GetActiveScene().buildIndex,
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
             CustomLobbyName = "OurLobbyID",
-            /*
+             
              *     // other args...
             SessionName = [string],
             SessionProperties = [Dictionary<string, SessionProperty>],
@@ -64,21 +89,21 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
             DisableNATPunchthrough = [bool],
             CustomSTUNServer = [string],
             AuthValues = [AuthenticationValues],
-             */
+             
         });
         EventManager.TriggerEvent("NetworkRoomSetupDone" , null);
     
     }
-
+*/
     
     public void CreateGame(string sessionName, string sceneName)
     {
-        var clientTask = NetworkManager.Instance.InitializeNetworkRunner( Runner, GameMode.Host, sessionName,NetAddress.Any(),SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}"));
+        var clientTask = NetworkManager.Instance.InitializeNetworkRunner( Runner, GameMode.Host, sessionName,NetAddress.Any(),SceneUtility.GetBuildIndexByScenePath($"Scenes/Menu/{sceneName}"));
     }
 
     public void JoinGame(string sessionName)
     {
-        var clientTask = NetworkManager.Instance.InitializeNetworkRunner( Runner, GameMode.Client, sessionName,NetAddress.Any(),SceneManager.GetActiveScene().buildIndex);
+        var clientTask = NetworkManager.Instance.InitializeNetworkRunner( Runner, GameMode.Client, sessionName,NetAddress.Any(),SceneUtility.GetBuildIndexByScenePath("Scenes/Menu/" + "Lobby" ));
     }
     
     private void Awake()
@@ -100,9 +125,9 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
     
 
 
-    public void Handle_Host(Dictionary<string, object> message) => StartGame(GameMode.Host, null);
-    public void Handle_Client(Dictionary<string, object> message) => StartGame(GameMode.Client, null);
-    
+    //public void Handle_Host(Dictionary<string, object> message) => StartGame(GameMode.Host, null);
+    //public void Handle_Client(Dictionary<string, object> message) => StartGame(GameMode.Client, null);
+    /*
     IEnumerator WaitForEventManager()
     {
         while(EventManager.instance== null)
@@ -111,14 +136,14 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
         }
         EventManager.StartListening("Host", Handle_Host);
         EventManager.StartListening("Client", Handle_Client);
-    }
+    }*/
     
     private void OnEnable()
     {
-        StartCoroutine(WaitForEventManager());
+        //StartCoroutine(WaitForEventManager());
        
     }
-    
+    /*
     private void OnDisable()
     {
         if (EventManager.instance != null)
@@ -126,15 +151,18 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
             EventManager.StopListening("Host", Handle_Host);
             EventManager.StopListening("Client", Handle_Client);
         }else Debug.Log("event manager is null");
-    }
-    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, string sessionName,  NetAddress address, SceneRef scene) 
+    }*/
+    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, string sessionName,  NetAddress address, SceneRef scene)
     {
+        sceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
         return runner.StartGame(new StartGameArgs {
             GameMode = gameMode,
             Address = address,
             Scene = scene,
             CustomLobbyName = "Lobby",
             SessionName = sessionName,
+            PlayerCount = 2,
+            SceneManager = sceneManager,
         });
     }
 }

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LoadScene : MonoBehaviour
 {
@@ -49,7 +51,11 @@ public class LoadScene : MonoBehaviour
     }
 #endif
     //public helper functions. These are what the Menu/UI Buttons will call when clicked to load a new scene
-    public void loadScene() => LevelManager.Instance.LoadScene(sceneToLoad);
+    public void loadScene()
+    {
+        LevelManager.Instance.LoadScene(sceneToLoad);
+        NetworkManager.Instance.Runner.SetActiveScene(SceneUtility.GetBuildIndexByScenePath($"Scenes/{sceneToLoad}"));
+    }
 
     //public helper functions. These are what the Menu/UI Buttons will call when clicked to load a new scene
     public void loadSceneAdditive() => LevelManager.Instance.LoadSceneAdditive(sceneToLoad);

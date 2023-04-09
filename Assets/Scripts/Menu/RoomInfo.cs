@@ -29,7 +29,7 @@ public class RoomInfo : MonoBehaviour
 
     public void onClick()
     {
-        OnJoinSession?.Invoke(sessionInfo);
+        Debug.Log("Join room clicked! "+ sessionInfo);
         EventManager.TriggerEvent("JoinRoom", new Dictionary<string, object> {{"value", sessionInfo} });
     }
     

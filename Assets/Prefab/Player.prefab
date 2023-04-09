@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 8680935623140534998}
   - component: {fileID: 8680935623140534999}
   - component: {fileID: 8680935623140535002}
+  - component: {fileID: 3974102223558462892}
+  - component: {fileID: 7951921549487866387}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -147,7 +149,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa372ebbe7fa2af489440c20b7f883da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
   RigidBody: {fileID: 0}
+  id: 
   bulletPrefab: {fileID: 0}
   bulletHandler: {fileID: 0}
   velocity: {x: 0, y: 0, z: 0}
@@ -155,6 +159,59 @@ MonoBehaviour:
   score: 0
   _health: 0
   _speed: 0
+--- !u!114 &3974102223558462892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8680935623140534996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1710889294, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  InterpolationSpace: 0
+  InterpolationTarget: {fileID: 8680935623622623742}
+  InterpolateErrorCorrection: 1
+  InterpolatedErrorCorrectionSettings:
+    MinRate: 3.3
+    MaxRate: 10
+    PosBlendStart: 0.25
+    PosBlendEnd: 1
+    PosMinCorrection: 0.025
+    PosTeleportDistance: 2
+    RotBlendStart: 0.1
+    RotBlendEnd: 0.5
+    RotTeleportRadians: 1.5
+  UseLegacySharedModeInterpolation: 0
+  TargetInterpolationDelay: 0.03
+--- !u!114 &7951921549487866387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8680935623140534996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 1
+  AllowStateAuthorityOverride: 1
+  AoiPositionSource: {fileID: 0}
+  Flags: 2305
+  NetworkGuid:
+    RawGuidValue: 7a74954b088f64043ba3c94383871f5e
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 8680935623140535002}
+  - {fileID: 3974102223558462892}
+  SimulationBehaviours: []
 --- !u!1 &8680935623622623743
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,6 +309,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numberOfBullets: 10
+  player: {fileID: 0}
+  fireForce: 0
   bulletPrefab: {fileID: 8656777797344238274, guid: 3b153a9fcafda574bb1266d79b583107,
     type: 3}
   bulletQuiverParent: {fileID: 8680935623622623743}

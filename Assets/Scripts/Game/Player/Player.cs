@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
+using Fusion;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
+
+ 
 
 public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
 {
@@ -128,8 +130,15 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
         velocity = (new UnityEngine.Vector3(moveVector.x, RigidBody.velocity.y, moveVector.y) * Speed);
     }
 
-    private void FixedUpdate()
+     public override void FixedUpdateNetwork()
     {
+        
+        if (GetInput(out NetworkInputData data))
+        {
+            data.direction.Normalize();
+            Debug.Log("data "+ data);
+        }
+        
         RigidBody.AddForce(velocity, ForceMode.VelocityChange);
     }
 

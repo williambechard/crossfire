@@ -96,6 +96,11 @@ public class LevelManager : MonoBehaviour
     public void EndTransition() => _TransitionCanvas.SetActive(false);
 
 
-    public void Update() => _progressBar.fillAmount = Mathf.MoveTowards(_progressBar.fillAmount, _target, 3 * Time.deltaTime);
+    public void Update(){
+        if (NetworkManager.Instance != null)
+        {
+            _progressBar.fillAmount = Mathf.MoveTowards(_progressBar.fillAmount, _target, 3 * NetworkManager.Instance.Runner.DeltaTime);
+        }else _progressBar.fillAmount = Mathf.MoveTowards(_progressBar.fillAmount, _target, 3 * Time.deltaTime);
+    } 
 
 }
