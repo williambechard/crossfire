@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GameManager : MonoBehaviour
     public SpawnTarget SpawnTarget1;
     public SpawnTarget SpawnTarget2;
     public CountDown CountDownPrefab;
+    private Vector3 P1Position = new Vector3(0, .5f, 37);
+    private Vector3 P2Position = new Vector3(0, .5f, -37);
     
     public enum GameState
     {
@@ -89,6 +92,14 @@ public class GameManager : MonoBehaviour
             }
             spawner.Spawn();
         }
+        
+        //spawn in player{s}
+        
+        if (FindObjectsOfType<Player>().Length == 0)
+        {
+            PhotonNetwork.Instantiate("Player", P1Position, Quaternion.identity);
+        }else  PhotonNetwork.Instantiate("Player", P2Position, Quaternion.identity);
+
         //Asssign players to their global game manager counterparts
         Player[] allPlayers = FindObjectsOfType<Player>();
         foreach (Player player in allPlayers)

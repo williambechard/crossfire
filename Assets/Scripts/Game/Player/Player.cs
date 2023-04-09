@@ -43,8 +43,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
         get { return _health; }
         set
         {
-            _health = value; 
-            
+            _health = value;
         }
     }
     

@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,6 +14,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Image _progressBar;
     private float _target;
 
+ 
+    
     [SerializeField] Animator anim;
 
     private void Awake()
@@ -44,16 +47,27 @@ public class LevelManager : MonoBehaviour
     public void LoadScene(string sceneName)
     {
         lastLoadedScene = sceneName;
+         
         lScene(SceneManager.LoadSceneAsync(sceneName));
     }
+    
+    public void LoadNetworkScene(string sceneName)
+    {
+      
+        lastLoadedScene = sceneName;
+        lScene(PhotonNetwork.LoadLevel(sceneName));
+    }
+    
     public void LoadSceneAdditive(string sceneName)
     {
+   
         lastLoadedScene = sceneName;
         lScene(SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive));
     }
 
     public void LoadSceneOnly(string sceneName)
     {
+  
         lastLoadedScene = sceneName;
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
     }

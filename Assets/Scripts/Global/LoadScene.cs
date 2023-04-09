@@ -51,6 +51,8 @@ public class LoadScene : MonoBehaviour
     //public helper functions. These are what the Menu/UI Buttons will call when clicked to load a new scene
     public void loadScene() => LevelManager.Instance.LoadScene(sceneToLoad);
 
+    public void loadNetworkScene()=> LevelManager.Instance.LoadNetworkScene(sceneToLoad);
+    
     //public helper functions. These are what the Menu/UI Buttons will call when clicked to load a new scene
     public void loadSceneAdditive() => LevelManager.Instance.LoadSceneAdditive(sceneToLoad);
 

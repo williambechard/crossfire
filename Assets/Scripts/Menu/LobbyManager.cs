@@ -41,7 +41,7 @@ public class LobbyManager : MonoBehaviour
     
     public void ClearList()
     {
-        foreach (Transform child in vGroup.transform)
+                foreach (Transform child in vGroup.transform)
         {
             Destroy(child.gameObject);
         }
@@ -49,6 +49,7 @@ public class LobbyManager : MonoBehaviour
 
     public void AddToList(SessionInfo sessionInfo)
     {
+        
         RoomInfo roomInfo = Instantiate(RoomInfoPrefab, vGroup.transform);
         roomInfo.SetInformation(sessionInfo);
         
