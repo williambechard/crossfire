@@ -10,9 +10,9 @@ public class GameManager : MonoBehaviour
     public SpawnTarget SpawnTarget1;
     public SpawnTarget SpawnTarget2;
     public CountDown CountDownPrefab;
-    private Vector3 P1Position = new Vector3(0, .5f, 37);
-    private Vector3 P2Position = new Vector3(0, .5f, -37);
-    
+    public  Vector3 P1Position = new Vector3(0, .5f, 37);
+    public  Vector3 P2Position = new Vector3(0, .5f, -37);
+    public GameObject PlayerPrefab;
     public enum GameState
     {
         Init,
@@ -94,11 +94,13 @@ public class GameManager : MonoBehaviour
         }
         
         //spawn in player{s}
-        
-        if (FindObjectsOfType<Player>().Length == 0)
+        int numOfPlayers = FindObjectsOfType<Player>().Length;
+        if (numOfPlayers == 0)
         {
-            PhotonNetwork.Instantiate("Player", P1Position, Quaternion.identity);
-        }else  PhotonNetwork.Instantiate("Player", P2Position, Quaternion.identity);
+            Debug.Log("Spawning Player 1");
+            NetworkManager.Instance.Runner.Spawn(PlayerPrefab, P1Position, Quaternion.identity, NetworkManager.Instance.Runner.LocalPlayer);
+            //PhotonNetwork.Instantiate("Player", );
+        }else if (numOfPlayers==1)  NetworkManager.Instance.Runner.Spawn(PlayerPrefab, P2Position, Quaternion.identity,NetworkManager.Instance.Runner.LocalPlayer);
 
         //Asssign players to their global game manager counterparts
         Player[] allPlayers = FindObjectsOfType<Player>();

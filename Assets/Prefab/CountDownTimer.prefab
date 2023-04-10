@@ -53,8 +53,8 @@ MonoBehaviour:
     type: 3}
   IntroText: Get Ready!
   OutroText: GO!
-  IntroDuration: 3
-  ScaleDuration: 0.5
-  PauseDuration: 0.5
+  IntroDuration: 0.5
+  ScaleDuration: 0.25
+  PauseDuration: 0.25
   IntroPauseDuration: 0.25
   NumCountdowns: 3

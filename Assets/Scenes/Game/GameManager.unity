@@ -185,7 +185,9 @@ MonoBehaviour:
   P2: {fileID: 0}
   SpawnTarget1: {fileID: 0}
   SpawnTarget2: {fileID: 0}
-  CurrentState: 0
+  CountDownPrefab: {fileID: 0}
+  PlayerPrefab: {fileID: 8680935623140534996, guid: 7a74954b088f64043ba3c94383871f5e,
+    type: 3}
 --- !u!95 &753554326
 Animator:
   serializedVersion: 5

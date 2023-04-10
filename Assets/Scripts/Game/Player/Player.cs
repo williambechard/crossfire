@@ -1,19 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
+using Fusion;
+using Fusion.Sockets;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
+public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled, INetworkRunnerCallbacks
 {
     public event Action OnMove;
     public event Action OnAttack;
     public event Action OnDamaged;
     public event Action OnDestroyed;
 
+    public Transform RotateObject;
+    
     private Camera cam;
     
     public void Damage(int amount)
@@ -71,12 +74,13 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
         {
             OnAttack?.Invoke();
 
-            bulletHandler.FireBullet(transform.forward);
+            bulletHandler.FireBullet(RotateObject.forward);
         }
     }
 
     public void Handle_PlayerMove(Dictionary<string, object> message)
     {
+        Debug.Log("Handle Player Move!");
         if (CanMove)
         {
             Vector2 moveVector = (Vector2)message["value"];
@@ -85,7 +89,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
             Move(new Vector2(moveVector.y, -moveVector.x));
         }
     }
-  
+    
     IEnumerator WaitForEventManager()
     {
         while(EventManager.instance == null)
@@ -107,6 +111,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
     private void OnEnable()
     {
         StartCoroutine(WaitForEventManager());
+        NetworkManager.Instance.Runner.AddCallbacks(this);
         cam = Camera.main;
         bulletHandler.player = this;
         bulletHandler.FillQuiver(10);
@@ -127,9 +132,22 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
         velocity = (new UnityEngine.Vector3(moveVector.x, RigidBody.velocity.y, moveVector.y) * Speed);
     }
 
+    public override void FixedUpdateNetwork()
+    {
+        if (GetInput(out MyInput data))
+        {
+     
+            velocity = (new UnityEngine.Vector3(data.moveDirection.y, RigidBody.velocity.y, -data.moveDirection.x) * Speed);
+        }
+        
+        //RigidBody.Move(transform.position + velocity, Quaternion.identity);
+        
+        RigidBody.AddForce(velocity, ForceMode.VelocityChange);
+    }
+
     private void FixedUpdate()
     {
-        RigidBody.AddForce(velocity, ForceMode.VelocityChange);
+      
     }
 
     private void Update() {
@@ -142,11 +160,103 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled
         direction.y = 0;
 
         // Rotate the object to face the mouse position
-        transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+        RotateObject.rotation = Quaternion.LookRotation(direction, Vector3.up);
     }
 
     public Player(ISpecialStrategy specialStrategy, int health, int score, bool canMove) : base(specialStrategy, health, score, canMove)
     {
-        
+     
+    }
+
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnInput(NetworkRunner runner, NetworkInput netInput)
+    {
+   
+        if (InputManager.Instance != null)
+        {
+            var myInput = new MyInput(); //create new Network Input struct
+
+            Vector2 moveVector = InputManager.Instance.input.Player.Move.ReadValue<Vector2>();
+         
+            //capture and assign
+            myInput.moveDirection.Set(moveVector.x, moveVector.y);
+
+            //now set it across the network
+            netInput.Set(myInput);
+        }
+    }
+
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnConnectedToServer(NetworkRunner runner)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnDisconnectedFromServer(NetworkRunner runner)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnSceneLoadStart(NetworkRunner runner)
+    {
+        throw new NotImplementedException();
     }
 }

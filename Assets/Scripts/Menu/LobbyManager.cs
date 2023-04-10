@@ -124,6 +124,15 @@ public class LobbyManager : MonoBehaviour
 
     public void CreateGame()
     {
+        StartCoroutine(WaitForNetwork());
+    }
+
+    IEnumerator WaitForNetwork()
+    {
+        while (NetworkManager.Instance == null)
+        {
+            yield return null;
+        }
         NetworkManager.Instance.CreateGame(createRoomName.text, "Main");
     }
 

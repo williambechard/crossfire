@@ -977,6 +977,8 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Fire.canceled += instance.OnFire;
             }
         }
+
+       
     }
     public PlayerActions @Player => new PlayerActions(this);
 

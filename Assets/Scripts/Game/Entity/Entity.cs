@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using Fusion;
 using UnityEngine;
 
 public interface IMovable
@@ -22,7 +21,7 @@ public interface IDeactivate
 {
     public bool IsIDDependant{get; set;}
     public string Id { get; set; }
-    public void DeActivate( [CanBeNull] string id = null);
+    public void DeActivate( string id = null);
 }
 public interface IDamageable
 {
@@ -38,14 +37,15 @@ public interface IPlayerControlled
     public void Handle_PlayerMove(Dictionary<string, object> message);
 }
 
-public class Entity : MonoBehaviour
+public class Entity : NetworkBehaviour
 {
       private ISpecialStrategy _specialStrategy = null;
       public event Action OnSetup;
       public event Action OnSpecial;
       public Rigidbody RigidBody;
- 
-  
+
+     
+
       public Entity(ISpecialStrategy specialStrategy, int health, int score, bool canMove)
       {
           OnSetup?.Invoke();

@@ -6,13 +6,23 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+public struct MyInput : INetworkInput
+{
+    public Vector2 moveDirection;
+}
 public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
 {
     public static NetworkManager Instance;
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
+
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        
+    }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInput(NetworkRunner runner, NetworkInput netInput)
+    {
+       
+    }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { Debug.Log("Connected to server");}
