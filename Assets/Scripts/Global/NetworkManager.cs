@@ -31,6 +31,11 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
         {
             if(EventManager.instance!=null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> {{"value", sessionList.Count + " Rooms Found."} });
         }
+
+        foreach (SessionInfo session in sessionList)
+        {
+            if(EventManager.instance!=null) EventManager.TriggerEvent("SessionListUpdate", new Dictionary<string, object> {{"value", session} });
+        }
         
         
     }

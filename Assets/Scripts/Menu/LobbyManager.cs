@@ -41,12 +41,16 @@ public class LobbyManager : MonoBehaviour
     
     public void ClearList()
     {
-                foreach (Transform child in vGroup.transform)
+         foreach (Transform child in vGroup.transform)
         {
             Destroy(child.gameObject);
         }
     }
-
+    public void Handle_SessionListInfo(Dictionary<string, object> message)
+    {
+        SessionInfo sessionInfo = (SessionInfo) message["value"];
+        AddToList(sessionInfo);
+    }
     public void AddToList(SessionInfo sessionInfo)
     {
         
@@ -64,6 +68,7 @@ public class LobbyManager : MonoBehaviour
     public void Handle_JoinRoom(Dictionary<string, object> message)
     {
         SessionInfo sessionInfo = (SessionInfo) message["value"];
+        NetworkManager.Instance.JoinGame(sessionInfo.Name);
         
     }
     
@@ -81,12 +86,14 @@ public class LobbyManager : MonoBehaviour
         {
             yield return null;
         }
+        EventManager.StartListening("SessionListUpdate", Handle_SessionListInfo);
         EventManager.StartListening("JoinRoom", Handle_JoinRoom);
         EventManager.StartListening("InfoUpdate", Handle_Info);
     }
 
     private void OnDisable()
     {
+        EventManager.StopListening("SessionListUpdate", Handle_SessionListInfo);
         EventManager.StopListening("JoinRoom", Handle_JoinRoom);
         EventManager.StopListening("InfoUpdate", Handle_Info);
     }
