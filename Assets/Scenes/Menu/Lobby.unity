@@ -1445,6 +1445,11 @@ PrefabInstance:
       propertyPath: ExtraScenesToLoad.Array.data[1]
       value: NetworkManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6285866384355175352, guid: 2a0d8d28d0c364c98b44181bd8875246,
+        type: 3}
+      propertyPath: ExtraScenesToLoad.Array.data[2]
+      value: NetworkManager
+      objectReference: {fileID: 0}
     - target: {fileID: 8440470082997031282, guid: 2a0d8d28d0c364c98b44181bd8875246,
         type: 3}
       propertyPath: m_Name

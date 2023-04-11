@@ -6,16 +6,41 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public struct MyInput : INetworkInput
 {
     public Vector2 moveDirection;
 }
-public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
+public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     public static NetworkManager Instance;
+    [SerializeField] private NetworkPrefabRef _playerPrefab;
+    public Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        /*
+            Debug.Log("Client" + runner.IsClient + " Server" + runner.IsServer);
+            if (runner.IsServer)
+            {
+                Debug.Log("Spawn player");
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+                NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, new Vector3(0, 0, 0), Quaternion.identity, player);
+                // Keep track of the player avatars so we can remove it when they disconnect
+                _spawnedCharacters.Add(player, networkPlayerObject);
+
+
+
+            }*/
+    }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        // Find and remove the players avatar
+        if (_spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
+        {
+            runner.Despawn(networkObject);
+            _spawnedCharacters.Remove(player);
+        }
+    }
     public void OnInput(NetworkRunner runner, NetworkInput netInput)
     {
     }
@@ -23,7 +48,7 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        Debug.Log("Shutdown called from "+ runner.LocalPlayer + " with reason " + shutdownReason);
+        Debug.Log("Shutdown called from " + runner.LocalPlayer + " with reason " + shutdownReason);
     }
     public void OnConnectedToServer(NetworkRunner runner) { }
 
@@ -47,16 +72,16 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (sessionList.Count == 0)
         {
-            if(EventManager.instance!=null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> {{"value", "No Rooms Found..."} });
+            if (EventManager.instance != null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> { { "value", "No Rooms Found..." } });
         }
         else
         {
-            if(EventManager.instance!=null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> {{"value", sessionList.Count + " Rooms Found."} });
+            if (EventManager.instance != null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> { { "value", sessionList.Count + " Rooms Found." } });
         }
 
         foreach (SessionInfo session in sessionList)
         {
-            if(EventManager.instance!=null) EventManager.TriggerEvent("SessionListUpdate", new Dictionary<string, object> {{"value", session} });
+            if (EventManager.instance != null) EventManager.TriggerEvent("SessionListUpdate", new Dictionary<string, object> { { "value", session } });
         }
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
@@ -91,21 +116,21 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
             AuthValues = [AuthenticationValues],
              */
         });
-        EventManager.TriggerEvent("NetworkRoomSetupDone" , null);
-    
+        EventManager.TriggerEvent("NetworkRoomSetupDone", null);
+
     }
 
-    
+
     public void CreateGame(string sessionName, string sceneName)
     {
-        var clientTask = NetworkManager.Instance.InitializeNetworkRunner( Runner, GameMode.Host, sessionName,NetAddress.Any(),SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}"));
+        var clientTask = NetworkManager.Instance.InitializeNetworkRunner(Runner, GameMode.Host, sessionName, NetAddress.Any(), SceneUtility.GetBuildIndexByScenePath($"scenes/{sceneName}"));
     }
 
     public void JoinGame(string sessionName)
     {
-        var clientTask = NetworkManager.Instance.InitializeNetworkRunner( Runner, GameMode.Client, sessionName,NetAddress.Any(),SceneManager.GetActiveScene().buildIndex);
+        var clientTask = NetworkManager.Instance.InitializeNetworkRunner(Runner, GameMode.Client, sessionName, NetAddress.Any(), SceneManager.GetActiveScene().buildIndex);
     }
-    
+
     private void Awake()
     {
         if (Instance == null)
@@ -117,7 +142,7 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
         {
             Destroy(gameObject);
         }
-        
+
         // Create the Fusion runner and let it know that we will be providing user input
         Runner = gameObject.AddComponent<NetworkRunner>();
         Runner.ProvideInput = true;
@@ -125,28 +150,26 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
 
     IEnumerator WaitForEventManager()
     {
-        while(EventManager.instance== null)
+        while (EventManager.instance == null)
         {
             yield return null;
         }
     }
-    
+
     private void OnEnable()
     {
         StartCoroutine(WaitForEventManager());
-       
+
     }
-    
+
     private void OnDisable()
     {
-        if (EventManager.instance != null)
-        {
-        
-        }else Debug.Log("event manager is null");
+
     }
-    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, string sessionName,  NetAddress address, SceneRef scene) 
+    protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, string sessionName, NetAddress address, SceneRef scene)
     {
-        return runner.StartGame(new StartGameArgs {
+        return runner.StartGame(new StartGameArgs
+        {
             GameMode = gameMode,
             Address = address,
             Scene = scene,

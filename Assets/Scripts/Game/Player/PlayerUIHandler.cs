@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
- 
+
 public class PlayerUIHandler : MonoBehaviour
 {
     public Slider P1slider;
@@ -12,7 +9,7 @@ public class PlayerUIHandler : MonoBehaviour
     public UnifyText P1Text;
     public UnifyText P2Text;
     public GameObject CountDownPrefab;
-    
+
     void SetupListener()
     {
         if (EventManager.instance != null)
@@ -21,24 +18,25 @@ public class PlayerUIHandler : MonoBehaviour
             EventManager.StartListening("UpdateScore", Handle_Score);
             EventManager.StartListening("BulletUpdate", Handle_Bullets);
             EventManager.StartListening("OutOfBullets", Handle_OutOfBullets);
-        }else Debug.Log("event manager is null");
+        }
+        else Debug.Log("event manager is null");
     }
 
     public void Handle_GameState_Init(Dictionary<string, object> message)
     {
         //spawn the countdown prefab
-        Instantiate(CountDownPrefab, transform);
+        //Instantiate(CountDownPrefab, transform);
     }
-    
+
     public void Handle_Score(Dictionary<string, object> message)
     {
         //determine player and adjust ui appropriately
         switch ((string)message["player"])
         {
-            case"1":
+            case "1":
                 P1Text.Text = ((int)message["score"]).ToString();
                 break;
-            case"2":
+            case "2":
                 P2Text.Text = ((int)message["score"]).ToString();
                 break;
         }
@@ -48,10 +46,10 @@ public class PlayerUIHandler : MonoBehaviour
         //determine player and adjust ui appropriately
         switch ((string)message["player"])
         {
-            case"1":
+            case "1":
                 P1slider.GetComponent<SliderShakeBlink>().StartShakeBlink();
                 break;
-            case"2":
+            case "2":
                 P2slider.GetComponent<SliderShakeBlink>().StartShakeBlink();
                 break;
         }
@@ -61,17 +59,17 @@ public class PlayerUIHandler : MonoBehaviour
         //determine player and adjust ui appropriately
         switch ((string)message["player"])
         {
-            case"1":
+            case "1":
                 P1slider.value = (float)message["slider"];
                 P1slider.GetComponent<SliderShakeBlink>().StopShakeBlink();
                 break;
-            case"2":
+            case "2":
                 P2slider.value = (float)message["slider"];
                 P2slider.GetComponent<SliderShakeBlink>().StopShakeBlink();
                 break;
         }
     }
-    
+
     private void OnEnable()
     {
         Invoke("SetupListener", .1f);

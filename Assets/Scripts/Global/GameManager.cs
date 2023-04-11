@@ -5,6 +5,8 @@ using Photon.Pun;
 public class GameManager : MonoBehaviour
 {
     private static GameManager gameManager;
+    public Fusion.PlayerRef P1Ref;
+    public Fusion.PlayerRef P2Ref;
     public Player P1;
     public Player P2;
     public SpawnTarget SpawnTarget1;
@@ -94,6 +96,7 @@ public class GameManager : MonoBehaviour
         }
         
         //spawn in player{s}
+        /*
         int numOfPlayers = FindObjectsOfType<Player>().Length;
         if (numOfPlayers == 0)
         {
@@ -101,7 +104,7 @@ public class GameManager : MonoBehaviour
             NetworkManager.Instance.Runner.Spawn(PlayerPrefab, P1Position, Quaternion.identity, NetworkManager.Instance.Runner.LocalPlayer);
             //PhotonNetwork.Instantiate("Player", );
         }else if (numOfPlayers==1)  NetworkManager.Instance.Runner.Spawn(PlayerPrefab, P2Position, Quaternion.identity,NetworkManager.Instance.Runner.LocalPlayer);
-
+*/
         //Asssign players to their global game manager counterparts
         Player[] allPlayers = FindObjectsOfType<Player>();
         foreach (Player player in allPlayers)

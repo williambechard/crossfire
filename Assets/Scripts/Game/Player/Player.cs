@@ -129,6 +129,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         }
         
         InputManager.Instance.input.Player.Move.canceled-= CancelMove;
+        NetworkManager.Instance.Runner.RemoveCallbacks(this);
     }
     public void Move(Vector2 moveVector)
     {
@@ -137,10 +138,10 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
 
     public override void FixedUpdateNetwork()
     {
-        //if (GetInput(out MyInput data))
-        //{
-        //    velocity = (new UnityEngine.Vector3(data.moveDirection.y, RigidBody.velocity.y, -data.moveDirection.x) * Speed);
-        //}
+        if (GetInput(out MyInput data))
+        {
+            velocity = (new UnityEngine.Vector3(data.moveDirection.y, RigidBody.velocity.y, -data.moveDirection.x) * Speed);
+        }
 
         RigidBody.AddForce(velocity, ForceMode.VelocityChange);
     }
@@ -170,12 +171,12 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        throw new NotImplementedException();
+      
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        throw new NotImplementedException();
+
     }
 
     public void CancelMove(InputAction.CallbackContext callbackContext)
@@ -184,7 +185,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
     }
     public void OnInput(NetworkRunner runner, NetworkInput netInput)
     {
-   /*
+   
         if (InputManager.Instance != null)
         {
             var myInput = new MyInput(); //create new Network Input struct
@@ -197,71 +198,71 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
             
             //now set it across the network
             netInput.Set(myInput);
-        }*/
+        }
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
     {
-        throw new NotImplementedException();
+   
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        throw new NotImplementedException();
+    
     }
 
     public void OnConnectedToServer(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+       
     }
 
     public void OnDisconnectedFromServer(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+       
     }
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
-        throw new NotImplementedException();
+      
     }
 
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
     {
-        throw new NotImplementedException();
+      
     }
 
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
-        throw new NotImplementedException();
+       
     }
 
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data)
     {
-        throw new NotImplementedException();
+       
     }
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)
     {
-        throw new NotImplementedException();
+        
     }
 }
