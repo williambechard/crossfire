@@ -38,10 +38,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Menu/Lobby.unity
     guid: 955c5152fea178b4dbc72bbcbcd9d7fb
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Menu/Loading.unity
     guid: 05183a7215d503847b7d568e414464b0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Menu/SimpleLobby.unity
     guid: 5d22130f3efc1564da7194d13356d677
   m_configObjects: {}

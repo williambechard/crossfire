@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -84,7 +85,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         if (CanMove)
         {
             Vector2 moveVector = (Vector2)message["value"];
-            // do something for player move
+            
 
             Move(new Vector2(moveVector.y, -moveVector.x));
         }
@@ -126,6 +127,8 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
             EventManager.StopListening("PlayerLook", Handle_PlayerLook);
             EventManager.StopListening("PlayerFire", Attack);
         }
+        
+        InputManager.Instance.input.Player.Move.canceled-= CancelMove;
     }
     public void Move(Vector2 moveVector)
     {
@@ -134,14 +137,11 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput(out MyInput data))
-        {
-     
-            velocity = (new UnityEngine.Vector3(data.moveDirection.y, RigidBody.velocity.y, -data.moveDirection.x) * Speed);
-        }
-        
-        //RigidBody.Move(transform.position + velocity, Quaternion.identity);
-        
+        //if (GetInput(out MyInput data))
+        //{
+        //    velocity = (new UnityEngine.Vector3(data.moveDirection.y, RigidBody.velocity.y, -data.moveDirection.x) * Speed);
+        //}
+
         RigidBody.AddForce(velocity, ForceMode.VelocityChange);
     }
 
@@ -178,21 +178,26 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         throw new NotImplementedException();
     }
 
+    public void CancelMove(InputAction.CallbackContext callbackContext)
+    {
+        velocity = new Vector3(0, 0, 0);
+    }
     public void OnInput(NetworkRunner runner, NetworkInput netInput)
     {
-   
+   /*
         if (InputManager.Instance != null)
         {
             var myInput = new MyInput(); //create new Network Input struct
 
             Vector2 moveVector = InputManager.Instance.input.Player.Move.ReadValue<Vector2>();
-         
+            
             //capture and assign
             myInput.moveDirection.Set(moveVector.x, moveVector.y);
-
+            InputManager.Instance.input.Player.Move.canceled+= CancelMove;
+            
             //now set it across the network
             netInput.Set(myInput);
-        }
+        }*/
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)

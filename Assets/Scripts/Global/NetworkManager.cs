@@ -14,21 +14,33 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
 {
     public static NetworkManager Instance;
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-        
-    }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnInput(NetworkRunner runner, NetworkInput netInput)
     {
-       
     }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-    public void OnConnectedToServer(NetworkRunner runner) { Debug.Log("Connected to server");}
-    public void OnDisconnectedFromServer(NetworkRunner runner) { }
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+
+    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+    {
+        Debug.Log("Shutdown called from "+ runner.LocalPlayer + " with reason " + shutdownReason);
+    }
+    public void OnConnectedToServer(NetworkRunner runner) { }
+
+    public void OnDisconnectedFromServer(NetworkRunner runner)
+    {
+        Debug.Log(runner.LocalPlayer + " disconnected from server.");
+    }
+
+    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
+    {
+        Debug.Log("Connection request " + request);
+    }
+
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
+    {
+        Debug.Log(remoteAddress + " " + reason);
+    }
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
@@ -46,8 +58,6 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
         {
             if(EventManager.instance!=null) EventManager.TriggerEvent("SessionListUpdate", new Dictionary<string, object> {{"value", session} });
         }
-        
-        
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
@@ -112,20 +122,13 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
         Runner = gameObject.AddComponent<NetworkRunner>();
         Runner.ProvideInput = true;
     }
-    
 
-
-    public void Handle_Host(Dictionary<string, object> message) => StartGame(GameMode.Host, null);
-    public void Handle_Client(Dictionary<string, object> message) => StartGame(GameMode.Client, null);
-    
     IEnumerator WaitForEventManager()
     {
         while(EventManager.instance== null)
         {
             yield return null;
         }
-        EventManager.StartListening("Host", Handle_Host);
-        EventManager.StartListening("Client", Handle_Client);
     }
     
     private void OnEnable()
@@ -138,8 +141,7 @@ public class NetworkManager  : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (EventManager.instance != null)
         {
-            EventManager.StopListening("Host", Handle_Host);
-            EventManager.StopListening("Client", Handle_Client);
+        
         }else Debug.Log("event manager is null");
     }
     protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, string sessionName,  NetAddress address, SceneRef scene) 

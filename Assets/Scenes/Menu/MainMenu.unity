@@ -312,8 +312,9 @@ GameObject:
   - component: {fileID: 374552857}
   - component: {fileID: 374552860}
   - component: {fileID: 374552861}
+  - component: {fileID: 374552862}
   m_Layer: 5
-  m_Name: HostBTN
+  m_Name: Start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -384,21 +385,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1912775971}
-        m_TargetAssemblyTypeName: EventTrigger, AssemblyDefinition
-        m_MethodName: TriggerEvent
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Host
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 374552861}
-        m_TargetAssemblyTypeName: ResetButton, AssemblyDefinition
-        m_MethodName: OnButtonClick
+      - m_Target: {fileID: 374552862}
+        m_TargetAssemblyTypeName: LoadScene, AssemblyDefinition
+        m_MethodName: loadScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -407,30 +396,6 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 927247504}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 149141920}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &374552858
 MonoBehaviour:
@@ -528,6 +493,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   altButton: {fileID: 1788284541}
+--- !u!114 &374552862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374552855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0803303f09d6a0940bfb84b86898c8bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scenes:
+  - MainMenu
+  - Main
+  - InputManager
+  - AudioManager
+  - SceneLoader
+  - EventManager
+  - GameplayUI
+  - GameManager
+  - NetworkManager
+  - Lobby
+  - Loading
+  - SimpleLobby
+  sceneToLoad: Lobby
 --- !u!1 &541225993
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,7 +577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Host
+  m_text: Start
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fccb22d410446e3408315ed58227931e, type: 2}
   m_sharedMaterial: {fileID: 478517625058282437, guid: fccb22d410446e3408315ed58227931e,
@@ -1026,7 +1017,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Join
+  m_text: Options
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fccb22d410446e3408315ed58227931e, type: 2}
   m_sharedMaterial: {fileID: 478517625058282437, guid: fccb22d410446e3408315ed58227931e,
@@ -2567,7 +2558,7 @@ GameObject:
   - component: {fileID: 1788284544}
   - component: {fileID: 1788284545}
   m_Layer: 5
-  m_Name: JoinBTN
+  m_Name: Options
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

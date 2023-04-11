@@ -133,6 +133,7 @@ public class LobbyManager : MonoBehaviour
         {
             yield return null;
         }
+        
         NetworkManager.Instance.CreateGame(createRoomName.text, "Main");
     }
 
