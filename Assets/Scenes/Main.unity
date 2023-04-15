@@ -1804,17 +1804,17 @@ PrefabInstance:
     - target: {fileID: 6285866384355175352, guid: 2a0d8d28d0c364c98b44181bd8875246,
         type: 3}
       propertyPath: ExtraScenesToLoad.Array.data[0]
-      value: EventManager
+      value: GameManager
       objectReference: {fileID: 0}
     - target: {fileID: 6285866384355175352, guid: 2a0d8d28d0c364c98b44181bd8875246,
         type: 3}
       propertyPath: ExtraScenesToLoad.Array.data[1]
-      value: InputManager
+      value: EventManager
       objectReference: {fileID: 0}
     - target: {fileID: 6285866384355175352, guid: 2a0d8d28d0c364c98b44181bd8875246,
         type: 3}
       propertyPath: ExtraScenesToLoad.Array.data[2]
-      value: GameManager
+      value: InputManager
       objectReference: {fileID: 0}
     - target: {fileID: 6285866384355175352, guid: 2a0d8d28d0c364c98b44181bd8875246,
         type: 3}
@@ -3229,28 +3229,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1828486349}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &762684344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 762684343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 1
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &762684345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6164,28 +6142,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 7666332406178135532}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1536601648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1536601647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 2
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &1536601649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7486,10 +7442,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 762684345}
-    - targetCorrespondingSourceObject: {fileID: 3258060526132456486, guid: 031a9350f6fe7734a83e251a40fe18d5,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 762684344}
   m_SourcePrefab: {fileID: 100100000, guid: 031a9350f6fe7734a83e251a40fe18d5, type: 3}
 --- !u!1 &1845282281
 GameObject:
@@ -8561,8 +8513,4 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1536601649}
-    - targetCorrespondingSourceObject: {fileID: 3258060526132456486, guid: 031a9350f6fe7734a83e251a40fe18d5,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1536601648}
   m_SourcePrefab: {fileID: 100100000, guid: 031a9350f6fe7734a83e251a40fe18d5, type: 3}

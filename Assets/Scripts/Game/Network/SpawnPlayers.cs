@@ -60,7 +60,6 @@ public class SpawnPlayers : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-
         if (runner.IsServer)
         {
             //spawn player
@@ -84,25 +83,10 @@ public class SpawnPlayers : MonoBehaviour, INetworkRunnerCallbacks
                 GameManager.instance.P2 = P2.GetComponent<Player>();
                 GameManager.instance.P2.id = "2";
                 GameManager.instance.P2.playerRef = player;
+
             }
         }
-        else
-        {
-            if (player == runner.LocalPlayer)
-            {
-                P1.name = "Player 1";
-                P1.GetComponent<Player>().id = "1";
 
-            }
-            else
-            {
-                P2.name = "Player 2";
-                P2.GetComponent<Player>().id = "2";
-            }
-
-
-
-        };
 
     }
 

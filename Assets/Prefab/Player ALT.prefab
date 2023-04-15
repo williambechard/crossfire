@@ -151,7 +151,6 @@ GameObject:
   - component: {fileID: 8680935623140534998}
   - component: {fileID: 8680935623140534999}
   - component: {fileID: 8680935623140535002}
-  - component: {fileID: 4711550179458650810}
   - component: {fileID: 7513119789253974332}
   - component: {fileID: -1010963316424458872}
   - component: {fileID: 8372852283525677521}
@@ -301,28 +300,6 @@ MonoBehaviour:
   score: 0
   _health: 0
   Speed: 8
---- !u!114 &4711550179458650810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8680935623140534996}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &7513119789253974332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,7 +488,7 @@ MonoBehaviour:
   numberOfBullets: 10
   player: {fileID: 0}
   fireForce: 18
-  bulletPrefab: {fileID: 8656777797344238274, guid: 3b153a9fcafda574bb1266d79b583107,
+  bulletPrefab: {fileID: 2886643264146231130, guid: 3b153a9fcafda574bb1266d79b583107,
     type: 3}
   bulletQuiverParent: {fileID: 8680935623622623743}
   quiver: []

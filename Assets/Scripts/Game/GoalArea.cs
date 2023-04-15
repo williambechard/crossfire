@@ -12,14 +12,11 @@ public class GoalArea : MonoBehaviour
 
             if (mb.CompareTag("Target"))
             {
-                IDeactivate obj = (IDeactivate)mb;
-                //if (obj.IsIDDependant)
-                //{
-                //    if (obj.Id == targetPlayerId)
-                //        obj.DeActivate();
-                // }
-                // else
-                obj.DeActivate(targetPlayerId);
+                Target t = mb.GetComponent<Target>();
+                t.DeActivate(targetPlayerId);
+                //IDeactivate obj = (IDeactivate)mb;
+
+                //obj.DeActivate(targetPlayerId);
             }
 
         }

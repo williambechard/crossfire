@@ -5,8 +5,7 @@
         "Unity.InputSystem",
         "Unity.TextMeshPro",
         "PhotonUnityNetworking",
-        "PhotonRealtime",
-        "Unity.Fusion.CodeGen"
+        "PhotonRealtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [

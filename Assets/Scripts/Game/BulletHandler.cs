@@ -8,10 +8,32 @@ public class BulletHandler : NetworkBehaviour
     public Player player;
     [SerializeField] private float fireForce;
 
-    public GameObject bulletPrefab;
+    public NetworkObject bulletPrefab;
     public GameObject bulletQuiverParent;
 
+
+
     public List<Bullet> quiver = new List<Bullet>();
+
+
+
+
+    /*
+    [Rpc]
+    public void RPC_FillQuiver(NetworkRunner runner)
+    {
+        Bullet[] allBullets = FindObjectsOfType<Bullet>();
+        Debug.Log("RPC_FillQuiver " + allBullets.Length);
+        foreach (Bullet bullet in allBullets)
+        {
+            if (bullet.Id != "1" || bullet.Id != "2")
+            {
+
+                bullet.Id = "1";
+            }
+        }
+    }*/
+
 
 
     public void FillQuiver(int num, PlayerRef player)
@@ -24,51 +46,64 @@ public class BulletHandler : NetworkBehaviour
         {
             int total = numberOfBullets - quiver.Count;
 
-            // //if (NetworkManager.Instance.Runner.IsServer)
-            //{
-            for (int i = 0; i < total; i++)
+            if (NetworkManager.Instance.Runner.IsServer)
             {
-                GameObject bullet = NetworkManager.Instance.Runner.Spawn(bulletPrefab).gameObject;
-                bullet.GetComponent<Bullet>().DeActivate();
-                quiver.Add(bullet.GetComponent<Bullet>());
+                for (int i = 0; i < total; i++)
+                {
+                    NetworkObject bullet = NetworkManager.Instance.Runner.Spawn(bulletPrefab, transform.position, Quaternion.identity, player);
+                    bullet.GetComponent<Bullet>().Id = this.player.id;
+                    bullet.GetComponent<Bullet>().DeActivate();
+                    quiver.Add(bullet.GetComponent<Bullet>());
+                    //bullet.GetComponent<Bullet>().RPC_Configure(this.player.id, this);
+                }
             }
-            //}
+            //  else
+            // {
+            //Debug.Log("Fill quiver not server");
+            // RPC_FillQuiver(NetworkManager.Instance.Runner);
+            // }
 
         }
+
 
 
         //}
 
     }
 
+
+
+
     public void ReportBullets(int activeBullets)
     {
+
         //let ui know
-        if (NetworkManager.Instance.Runner.IsServer)
-        {
-            float slider = (float)activeBullets / (float)numberOfBullets;
-            EventManager.TriggerEvent("BulletUpdate",
-                new Dictionary<string, object> { { "player", player.id }, { "slider", slider } });
-        }
+        //if (NetworkManager.Instance.Runner.IsServer)
+        //{
+        //can i ajdust this so if it is client then we get the servers bullets
+        float slider = (float)activeBullets / (float)numberOfBullets;
+        EventManager.TriggerEvent("BulletUpdate",
+            new Dictionary<string, object> { { "player", player.id }, { "slider", slider } });
+        //}
 
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_FireBullet()
     {
-
         Vector3 forwardVector = bulletQuiverParent.transform.forward;
-
 
         List<Bullet> activeBullets = new List<Bullet>();
         List<Bullet> inactiveBullets = new List<Bullet>();
 
-        foreach (Bullet bullet in quiver)
+        foreach (Bullet bullet in FindObjectsOfType<Bullet>())
         {
-            if (bullet.IsActive)
+            if (bullet.IsActive && bullet.Id == player.id)
                 activeBullets.Add(bullet);
             else inactiveBullets.Add(bullet);
         }
+
+
 
         //only fire if we are under our number of bullets threshold
         if (activeBullets.Count < numberOfBullets && inactiveBullets.Count > 0)
@@ -77,6 +112,7 @@ public class BulletHandler : NetworkBehaviour
             bullet.RPC_ActivateBullet();
             bullet.bulletHandler = this;
             bullet.Id = player.id;
+            bullet.IsActive = true;
             bullet.transform.position = transform.parent.position;
             bullet.rb.AddForce(forwardVector * fireForce, ForceMode.Impulse);
 

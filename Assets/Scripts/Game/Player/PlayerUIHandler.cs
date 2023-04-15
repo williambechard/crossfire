@@ -10,25 +10,24 @@ public class PlayerUIHandler : MonoBehaviour
     public UnifyText P1Text;
     public UnifyText P2Text;
     public GameObject CountDownPrefab;
+    public Bullet[] allBullets;
+
 
     public IEnumerator WaitForEventManager()
     {
-        if (NetworkManager.Instance.Runner.IsServer)
-        {
-            while (!EventManager.instance)
-            {
-                yield return null;
-            }
 
-            EventManager.StartListening("Init", Handle_GameState_Init);
-            EventManager.StartListening("UpdateScore", Handle_Score);
-            EventManager.StartListening("BulletUpdate", Handle_Bullets);
-            EventManager.StartListening("OutOfBullets", Handle_OutOfBullets);
+        while (EventManager.instance == null)
+        {
+            yield return null;
         }
 
+        EventManager.StartListening("Init", Handle_GameState_Init);
+        EventManager.StartListening("UpdateScore", Handle_Score);
+        EventManager.StartListening("BulletUpdate", Handle_Bullets);
+        EventManager.StartListening("OutOfBullets", Handle_OutOfBullets);
+
+        //StartCoroutine(onTick());
     }
-
-
 
     public void Handle_GameState_Init(Dictionary<string, object> message)
     {
@@ -38,11 +37,9 @@ public class PlayerUIHandler : MonoBehaviour
 
 
 
-
-
     public void Handle_Score(Dictionary<string, object> message)
     {
-        Debug.Log("player " + (string)message["player"]);
+        Debug.Log("player " + (string)message["player"] + " score " + ((int)message["score"]).ToString());
         //determine player and adjust ui appropriately
         switch ((string)message["player"])
         {
@@ -54,6 +51,7 @@ public class PlayerUIHandler : MonoBehaviour
                 break;
         }
 
+        //RPC_Score((string)message["player"], ((int)message["score"]).ToString());
 
     }
     public void Handle_OutOfBullets(Dictionary<string, object> message)
@@ -71,33 +69,38 @@ public class PlayerUIHandler : MonoBehaviour
     }
     public void Handle_Bullets(Dictionary<string, object> message)
     {
+        Debug.Log("Handle Bullets called for player " + (string)message["player"] + " slider " + ((float)message["slider"]).ToString("0.00"));
         //determine player and adjust ui appropriately
         switch ((string)message["player"])
         {
             case "1":
+                Debug.Log("adjusting slider for P1");
                 P1slider.value = (float)message["slider"];
                 P1slider.GetComponent<SliderShakeBlink>().StopShakeBlink();
                 break;
             case "2":
+                Debug.Log("adjusting slider for P2");
                 P2slider.value = (float)message["slider"];
                 P2slider.GetComponent<SliderShakeBlink>().StopShakeBlink();
                 break;
         }
     }
 
-    private void OnEnable()
+    public void Start()
     {
         StartCoroutine(WaitForEventManager());
     }
 
+
+
+
     private void OnDisable()
     {
-        if (NetworkManager.Instance.Runner.IsServer)
-        {
-            EventManager.StopListening("Init", Handle_GameState_Init);
-            EventManager.StopListening("UpdateScore", Handle_Score);
-            EventManager.StopListening("BulletUpdate", Handle_Bullets);
-            EventManager.StopListening("OutOfBullets", Handle_OutOfBullets);
-        }
+
+        EventManager.StopListening("Init", Handle_GameState_Init);
+        EventManager.StopListening("UpdateScore", Handle_Score);
+        EventManager.StopListening("BulletUpdate", Handle_Bullets);
+        EventManager.StopListening("OutOfBullets", Handle_OutOfBullets);
+
     }
 }

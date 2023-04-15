@@ -11,6 +11,11 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled, INetworkRunnerCallbacks
 {
+    [SerializeField]
+    [Networked] int TotalBullets { get; set; }
+    [SerializeField]
+    [Networked] int TotalFired { get; set; }
+
     public PlayerRef playerRef;
     public event Action OnMove;
     public event Action OnAttack;
@@ -55,9 +60,11 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         set
         {
             score = value;
+            Debug.Log("player " + id + " score event " + score + " " + EventManager.instance);
 
             if (EventManager.instance != null)
                 EventManager.TriggerEvent("UpdateScore", new Dictionary<string, object> { { "player", id }, { "score", value } });
+
         }
     }
 
@@ -93,6 +100,31 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         }
     }
 
+    public void Start()
+    {
+        TotalBullets = 10;
+        TotalFired = 0;
+    }
+
+    IEnumerator WaitForGameManager()
+    {
+        while (GameManager.instance == null)
+        {
+            yield return null;
+        }
+        //assign id
+        if (GameManager.instance.P1 == null)
+        {
+            GameManager.instance.P1 = this;
+            GameManager.instance.P1.id = "1";
+        }
+        else if (GameManager.instance.P2 == null)
+        {
+            GameManager.instance.P2 = this;
+            GameManager.instance.P2.id = "2";
+        }
+    }
+
     IEnumerator WaitForEventManager()
     {
         while (EventManager.instance == null)
@@ -103,6 +135,16 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         EventManager.StartListening("PlayerStop", Handle_PlayerMove);
         EventManager.StartListening("PlayerLook", Handle_PlayerLook);
         EventManager.StartListening("PlayerFire", Attack);
+    }
+
+    IEnumerator WaitForNetworkManager()
+    {
+        while (NetworkManager.Instance == null)
+        {
+            yield return null;
+        }
+        bulletHandler.player = this;
+        bulletHandler.FillQuiver(10, playerRef);
     }
 
     void Handle_PlayerLook(Dictionary<string, object> message)
@@ -116,10 +158,10 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
 
         controller = GetComponent<CharacterController>();
         StartCoroutine(WaitForEventManager());
+        StartCoroutine(WaitForGameManager());
         NetworkManager.Instance.Runner.AddCallbacks(this);
         cam = Camera.main;
-        bulletHandler.player = this;
-        bulletHandler.FillQuiver(10, playerRef);
+        StartCoroutine(WaitForNetworkManager());
 
     }
 
@@ -153,6 +195,9 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
                 {
                     Debug.Log("Player fires: " + name);
                     bulletHandler.RPC_FireBullet();
+                    if (TotalFired < TotalBullets)
+                        TotalFired++;
+
                 }
 
                 mousePosition = data.mousePosition;
@@ -220,6 +265,7 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
             {
                 canFire = false;
                 myInput.fire = true;
+
             }
             else myInput.fire = false;
 
@@ -294,5 +340,10 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
     public void OnSceneLoadStart(NetworkRunner runner)
     {
 
+    }
+
+    public static explicit operator NetworkObject(Player v)
+    {
+        throw new NotImplementedException();
     }
 }

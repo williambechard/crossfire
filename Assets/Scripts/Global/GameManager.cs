@@ -2,7 +2,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager gameManager;
+
+
+    public static GameManager instance;
+
     public Fusion.PlayerRef P1Ref;
     public Fusion.PlayerRef P2Ref;
     public Player P1;
@@ -13,6 +16,24 @@ public class GameManager : MonoBehaviour
     public Vector3 P1Position = new Vector3(0, .5f, 37);
     public Vector3 P2Position = new Vector3(0, .5f, -37);
     public GameObject PlayerPrefab;
+
+
+    private void Awake()
+    {
+        CreateSingleton();
+    }
+
+    void CreateSingleton()
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+
+        DontDestroyOnLoad(gameObject);
+    }
+
+
     public enum GameState
     {
         Init,
@@ -47,7 +68,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
+    /*
     public static GameManager instance
     {
         get
@@ -68,16 +89,17 @@ public class GameManager : MonoBehaviour
             }
             return gameManager;
         }
-    }
+    }*/
 
     private void Start()
     {
 
-        Invoke("Init", 1f);
+        Invoke("Init", 3f);
     }
 
     void Init()
     {
+        Debug.Log("INIT CALLED");
         //Asssign spawners to their global game manager counterparts
         SpawnTarget[] allSpawners = FindObjectsOfType<SpawnTarget>();
         foreach (SpawnTarget spawner in allSpawners)
@@ -85,25 +107,18 @@ public class GameManager : MonoBehaviour
             switch (spawner.targetId)
             {
                 case "1":
+                    Debug.Log("Spawning Target 1");
                     SpawnTarget1 = spawner;
                     break;
                 case "2":
+                    Debug.Log("Spawning Target 2");
                     SpawnTarget2 = spawner;
                     break;
             }
             spawner.Spawn();
         }
 
-        //spawn in player{s}
-        /*
-        int numOfPlayers = FindObjectsOfType<Player>().Length;
-        if (numOfPlayers == 0)
-        {
-            Debug.Log("Spawning Player 1");
-            NetworkManager.Instance.Runner.Spawn(PlayerPrefab, P1Position, Quaternion.identity, NetworkManager.Instance.Runner.LocalPlayer);
-            //PhotonNetwork.Instantiate("Player", );
-        }else if (numOfPlayers==1)  NetworkManager.Instance.Runner.Spawn(PlayerPrefab, P2Position, Quaternion.identity,NetworkManager.Instance.Runner.LocalPlayer);
-*/
+
         //Asssign players to their global game manager counterparts
         Player[] allPlayers = FindObjectsOfType<Player>();
         foreach (Player player in allPlayers)

@@ -2,8 +2,7 @@
     "name": "Fusion.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:142cc54f3f73e4dabac1c30b19afb51d",
-        "GUID:19e39f4cea842594788e0c7be4c044c8"
+        "AssemblyDefinition"
     ],
     "includePlatforms": [
         "Editor"
