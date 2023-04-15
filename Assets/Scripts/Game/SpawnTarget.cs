@@ -8,7 +8,9 @@ public class SpawnTarget : MonoBehaviour
     public string targetId;
     public void Spawn()
     {
-        GameObject spawnedObject = Instantiate(SpawnObject, transform.position, Quaternion.identity);
+        GameObject spawnedObject =
+            NetworkManager.Instance.Runner.Spawn(SpawnObject, transform.position, Quaternion.identity, null).gameObject; 
+        //Instantiate(SpawnObject, transform.position, Quaternion.identity);
         spawnedObject.GetComponent<Target>().Id= targetId;
     }
 

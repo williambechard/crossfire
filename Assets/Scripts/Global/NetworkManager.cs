@@ -10,36 +10,28 @@ using UnityEngine.SceneManagement;
 public struct MyInput : INetworkInput
 {
     public Vector2 moveDirection;
+    public Vector2 mousePosition;
+    public bool fire;
+
 }
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
+
     public static NetworkManager Instance;
     [SerializeField] private NetworkPrefabRef _playerPrefab;
     public Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        /*
-            Debug.Log("Client" + runner.IsClient + " Server" + runner.IsServer);
-            if (runner.IsServer)
-            {
-                Debug.Log("Spawn player");
 
-                NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, new Vector3(0, 0, 0), Quaternion.identity, player);
-                // Keep track of the player avatars so we can remove it when they disconnect
-                _spawnedCharacters.Add(player, networkPlayerObject);
-
-
-
-            }*/
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         // Find and remove the players avatar
-        if (_spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
+        /*if (_spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
         {
             runner.Despawn(networkObject);
             _spawnedCharacters.Remove(player);
-        }
+        }*/
     }
     public void OnInput(NetworkRunner runner, NetworkInput netInput)
     {
@@ -59,7 +51,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
-        Debug.Log("Connection request " + request);
+
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
@@ -70,6 +62,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
+
+
+        EventManager.TriggerEvent("LoadingDone", null);
         if (sessionList.Count == 0)
         {
             if (EventManager.instance != null) EventManager.TriggerEvent("InfoUpdate", new Dictionary<string, object> { { "value", "No Rooms Found..." } });
@@ -154,6 +149,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             yield return null;
         }
+        EventManager.StartListening("SpawnGameObject", HandleSpawnGameObject);
     }
 
     private void OnEnable()
@@ -162,15 +158,26 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     }
 
+    public void HandleSpawnGameObject(Dictionary<string, object> message)
+    {
+        if (Runner.IsServer)
+        {
+            //spawn the object on the server
+
+        }
+
+    }
+
     private void OnDisable()
     {
-
+        EventManager.StopListening("SpawnGameObject", HandleSpawnGameObject);
     }
     protected virtual Task InitializeNetworkRunner(NetworkRunner runner, GameMode gameMode, string sessionName, NetAddress address, SceneRef scene)
     {
         return runner.StartGame(new StartGameArgs
         {
             GameMode = gameMode,
+            PlayerCount = 2,
             Address = address,
             Scene = scene,
             CustomLobbyName = "Lobby",

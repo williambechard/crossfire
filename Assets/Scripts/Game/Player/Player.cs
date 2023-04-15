@@ -1,8 +1,8 @@
+using Fusion;
+using Fusion.Sockets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Fusion;
-using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Quaternion = UnityEngine.Quaternion;
@@ -11,15 +11,16 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled, INetworkRunnerCallbacks
 {
+    public PlayerRef playerRef;
     public event Action OnMove;
     public event Action OnAttack;
     public event Action OnDamaged;
     public event Action OnDestroyed;
 
     public Transform RotateObject;
-    
+    private Vector2 inputVelocity;
     private Camera cam;
-    
+
     public void Damage(int amount)
     {
         throw new NotImplementedException();
@@ -36,12 +37,9 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
     [SerializeField]
     private int _health;
     [SerializeField]
-    private float _speed;
-    public float Speed
-    {
-        get { return _speed;}
-        set { _speed = value; }
-    }
+
+    public float Speed;
+
     public int Health
     {
         get { return _health; }
@@ -50,32 +48,36 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
             _health = value;
         }
     }
-    
+
     public int Score
     {
         get { return score; }
         set
         {
-            score = value; 
-            
+            score = value;
+
             if (EventManager.instance != null)
-                EventManager.TriggerEvent("UpdateScore", new Dictionary<string, object> {{"player", id}, {"score", value}});
+                EventManager.TriggerEvent("UpdateScore", new Dictionary<string, object> { { "player", id }, { "score", value } });
         }
     }
 
     public bool CanMove
     {
-        get { return _canMove; } 
+        get { return _canMove; }
         set { _canMove = value; }
     }
+
+    float IMovable.Speed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    private CharacterController controller;
 
     public void Attack(Dictionary<string, object> message)
     {
         if (CanMove)
         {
-            OnAttack?.Invoke();
+            //OnAttack?.Invoke();
 
-            bulletHandler.FireBullet(RotateObject.forward);
+            //bulletHandler.FireBullet(RotateObject.forward);
         }
     }
 
@@ -85,15 +87,15 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         if (CanMove)
         {
             Vector2 moveVector = (Vector2)message["value"];
-            
 
+            inputVelocity = moveVector;
             Move(new Vector2(moveVector.y, -moveVector.x));
         }
     }
-    
+
     IEnumerator WaitForEventManager()
     {
-        while(EventManager.instance == null)
+        while (EventManager.instance == null)
         {
             yield return null;
         }
@@ -103,19 +105,22 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
         EventManager.StartListening("PlayerFire", Attack);
     }
 
-    void Handle_PlayerLook (Dictionary<string, object> message)
+    void Handle_PlayerLook(Dictionary<string, object> message)
     {
-        mousePosition = (Vector2) message["value"];
-        Vector2 playerPosition = cam.WorldToScreenPoint(transform.position);
+        //mousePosition = (Vector2)message["value"];
+        //Vector2 playerPosition = cam.WorldToScreenPoint(transform.position);
     }
-    
+
     private void OnEnable()
     {
+
+        controller = GetComponent<CharacterController>();
         StartCoroutine(WaitForEventManager());
         NetworkManager.Instance.Runner.AddCallbacks(this);
         cam = Camera.main;
         bulletHandler.player = this;
-        bulletHandler.FillQuiver(10);
+        bulletHandler.FillQuiver(10, playerRef);
+
     }
 
     private void OnDisable()
@@ -127,37 +132,46 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
             EventManager.StopListening("PlayerLook", Handle_PlayerLook);
             EventManager.StopListening("PlayerFire", Attack);
         }
-        
-        InputManager.Instance.input.Player.Move.canceled-= CancelMove;
+
+        InputManager.Instance.input.Player.Move.canceled -= CancelMove;
         NetworkManager.Instance.Runner.RemoveCallbacks(this);
     }
     public void Move(Vector2 moveVector)
     {
-        velocity = (new UnityEngine.Vector3(moveVector.x, RigidBody.velocity.y, moveVector.y) * Speed);
+        //velocity = (new UnityEngine.Vector3(moveVector.x, RigidBody.velocity.y, moveVector.y) * Speed);
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput(out MyInput data))
+        if (NetworkManager.Instance.Runner.IsServer)
         {
-            velocity = (new UnityEngine.Vector3(data.moveDirection.y, RigidBody.velocity.y, -data.moveDirection.x) * Speed);
+            if (GetInput(out MyInput data))
+            {
+
+                velocity = (new UnityEngine.Vector3(data.moveDirection.y, 0, -data.moveDirection.x) * Speed);
+                if (data.fire)
+                {
+                    Debug.Log("Player fires: " + name);
+                    bulletHandler.RPC_FireBullet();
+                }
+
+                mousePosition = data.mousePosition;
+                controller.Move(velocity * NetworkManager.Instance.Runner.DeltaTime);
+            }
         }
 
-        RigidBody.AddForce(velocity, ForceMode.VelocityChange);
     }
 
-    private void FixedUpdate()
+
+
+    private void Update()
     {
-      
-    }
-
-    private void Update() {
         // Convert the mouse position to world coordinates
-        var position = transform.position;
-        Vector3 worldMousePosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.transform.position.y - position.y));
+
+        Vector3 worldMousePosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.transform.position.y - 10));
 
         // Get the direction from the object to the mouse position, but only on the y-axis
-        Vector3 direction = worldMousePosition - position;
+        Vector3 direction = worldMousePosition - transform.position;
         direction.y = 0;
 
         // Rotate the object to face the mouse position
@@ -166,12 +180,12 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
 
     public Player(ISpecialStrategy specialStrategy, int health, int score, bool canMove) : base(specialStrategy, health, score, canMove)
     {
-     
+
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-      
+
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -183,19 +197,35 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
     {
         velocity = new Vector3(0, 0, 0);
     }
+
+    bool canFire = true;
     public void OnInput(NetworkRunner runner, NetworkInput netInput)
     {
-   
+
         if (InputManager.Instance != null)
         {
             var myInput = new MyInput(); //create new Network Input struct
 
-            Vector2 moveVector = InputManager.Instance.input.Player.Move.ReadValue<Vector2>();
-            
+            //Vector2 moveVector = InputManager.Instance.input.Player.Move.ReadValue<Vector2>();
+
             //capture and assign
-            myInput.moveDirection.Set(moveVector.x, moveVector.y);
-            InputManager.Instance.input.Player.Move.canceled+= CancelMove;
-            
+            if (InputManager.Instance.input.Player.Move.IsPressed())
+                myInput.moveDirection = InputManager.Instance.input.Player.Move.ReadValue<Vector2>();
+            else myInput.moveDirection = new Vector2(0, 0);
+
+
+            myInput.mousePosition = InputManager.Instance.input.Player.Look.ReadValue<Vector2>();
+
+            if (InputManager.Instance.input.Player.Fire.ReadValue<float>() == 1 && canFire)
+            {
+                canFire = false;
+                myInput.fire = true;
+            }
+            else myInput.fire = false;
+
+
+            if (!InputManager.Instance.input.Player.Fire.IsPressed()) canFire = true;
+
             //now set it across the network
             netInput.Set(myInput);
         }
@@ -203,66 +233,66 @@ public class Player : Entity, IMovable, IAttack, IDamageable, IPlayerControlled,
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
     {
-   
+
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-    
+
     }
 
     public void OnConnectedToServer(NetworkRunner runner)
     {
-       
+
     }
 
     public void OnDisconnectedFromServer(NetworkRunner runner)
     {
-       
+
     }
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
-        
+
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
     {
-        
+
     }
 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
     {
-        
+
     }
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
-      
+
     }
 
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
     {
-      
+
     }
 
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
     {
-       
+
     }
 
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data)
     {
-       
+
     }
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        
+
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)
     {
-        
+
     }
 }

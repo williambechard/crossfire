@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,17 +11,24 @@ public class PlayerUIHandler : MonoBehaviour
     public UnifyText P2Text;
     public GameObject CountDownPrefab;
 
-    void SetupListener()
+    public IEnumerator WaitForEventManager()
     {
-        if (EventManager.instance != null)
+        if (NetworkManager.Instance.Runner.IsServer)
         {
+            while (!EventManager.instance)
+            {
+                yield return null;
+            }
+
             EventManager.StartListening("Init", Handle_GameState_Init);
             EventManager.StartListening("UpdateScore", Handle_Score);
             EventManager.StartListening("BulletUpdate", Handle_Bullets);
             EventManager.StartListening("OutOfBullets", Handle_OutOfBullets);
         }
-        else Debug.Log("event manager is null");
+
     }
+
+
 
     public void Handle_GameState_Init(Dictionary<string, object> message)
     {
@@ -28,8 +36,13 @@ public class PlayerUIHandler : MonoBehaviour
         //Instantiate(CountDownPrefab, transform);
     }
 
+
+
+
+
     public void Handle_Score(Dictionary<string, object> message)
     {
+        Debug.Log("player " + (string)message["player"]);
         //determine player and adjust ui appropriately
         switch ((string)message["player"])
         {
@@ -40,6 +53,8 @@ public class PlayerUIHandler : MonoBehaviour
                 P2Text.Text = ((int)message["score"]).ToString();
                 break;
         }
+
+
     }
     public void Handle_OutOfBullets(Dictionary<string, object> message)
     {
@@ -72,14 +87,17 @@ public class PlayerUIHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        Invoke("SetupListener", .1f);
+        StartCoroutine(WaitForEventManager());
     }
 
     private void OnDisable()
     {
-        EventManager.StopListening("Init", Handle_GameState_Init);
-        EventManager.StopListening("UpdateScore", Handle_Score);
-        EventManager.StopListening("BulletUpdate", Handle_Bullets);
-        EventManager.StopListening("OutOfBullets", Handle_OutOfBullets);
+        if (NetworkManager.Instance.Runner.IsServer)
+        {
+            EventManager.StopListening("Init", Handle_GameState_Init);
+            EventManager.StopListening("UpdateScore", Handle_Score);
+            EventManager.StopListening("BulletUpdate", Handle_Bullets);
+            EventManager.StopListening("OutOfBullets", Handle_OutOfBullets);
+        }
     }
 }

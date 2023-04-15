@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+using Fusion;
 using UnityEngine;
 
 public class Target : MonoBehaviour, IDeactivate
@@ -10,19 +8,19 @@ public class Target : MonoBehaviour, IDeactivate
     private bool isActive = true;
     public bool IsIDDependant
     {
-        get { return _isIDDependant;}
+        get { return _isIDDependant; }
         set { _isIDDependant = value; }
     }
     public string Id
     {
-        get { return _id;}
+        get { return _id; }
         set { _id = value; }
     }
     public void DeActivate(string id = null)
     {
         if (isActive)
         {
-            Debug.Log(this.gameObject.name + " deactivated");
+
             //let spawner know which target to spawn
             SpawnTarget[] allSpawners = FindObjectsOfType<SpawnTarget>();
 
@@ -50,8 +48,9 @@ public class Target : MonoBehaviour, IDeactivate
             isActive = false;
 
             //destroy this gameobject
-            Destroy(this.gameObject);
+            NetworkManager.Instance.Runner.Despawn(this.GetComponent<NetworkObject>());
+            //Destroy(this.gameObject);
         }
     }
 }
- 
+

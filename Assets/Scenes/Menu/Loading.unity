@@ -301,7 +301,7 @@ PrefabInstance:
     - target: {fileID: 6285866384355175352, guid: 2a0d8d28d0c364c98b44181bd8875246,
         type: 3}
       propertyPath: ExtraScenesToLoad.Array.data[2]
-      value: Main
+      value: Lobby
       objectReference: {fileID: 0}
     - target: {fileID: 8440470082997031282, guid: 2a0d8d28d0c364c98b44181bd8875246,
         type: 3}
@@ -977,9 +977,6 @@ GameObject:
   - component: {fileID: 1912775969}
   - component: {fileID: 1912775968}
   - component: {fileID: 1912775967}
-  - component: {fileID: 1912775971}
-  - component: {fileID: 1912775972}
-  - component: {fileID: 1912775973}
   m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
@@ -1070,48 +1067,3 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1912775971
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1912775966}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83acfd71062793b49a2628f25102797c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1912775972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1912775966}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705d0730b39e1b54bad6b66fde17c2bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StartRoomBtn: {fileID: 0}
-  LoadingText: {fileID: 0}
---- !u!114 &1912775973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1912775966}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27cab5fbb1c8e584ca449ff136a2e3db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vGroup: {fileID: 0}
-  text: {fileID: 0}
-  RoomInfoPrefab: {fileID: 6960215733436426140, guid: 8d1f21cde41561d4ba814fc8650a6f19,
-    type: 3}
-  info: {fileID: 0}
-  createRoomName: {fileID: 0}
-  refreshBtn: {fileID: 0}

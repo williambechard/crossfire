@@ -22,7 +22,8 @@ public class CountDown : MonoBehaviour
     {
         yield return new WaitForSeconds(IntroPauseDuration);
         // Instantiate the IntroText prefab
-        UnifyText timerText = Instantiate(IntroTextPrefab, transform).GetComponent<UnifyText>();
+        UnifyText timerText = NetworkManager.Instance.Runner.Spawn(IntroTextPrefab).GetComponent<UnifyText>();
+        timerText.transform.parent = transform;
         
         // Set the intro text character by character over IntroDuration seconds
         float startTime = Time.time;

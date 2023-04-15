@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,8 +10,8 @@ public class GameManager : MonoBehaviour
     public SpawnTarget SpawnTarget1;
     public SpawnTarget SpawnTarget2;
     public CountDown CountDownPrefab;
-    public  Vector3 P1Position = new Vector3(0, .5f, 37);
-    public  Vector3 P2Position = new Vector3(0, .5f, -37);
+    public Vector3 P1Position = new Vector3(0, .5f, 37);
+    public Vector3 P2Position = new Vector3(0, .5f, -37);
     public GameObject PlayerPrefab;
     public enum GameState
     {
@@ -38,8 +36,8 @@ public class GameManager : MonoBehaviour
                         EventManager.TriggerEvent("Init", null);
                     break;
                 case GameState.Playing:
-                    if(P1) P1.CanMove = true;
-                    if(P2) P2.CanMove = true;
+                    if (P1) P1.CanMove = true;
+                    if (P2) P2.CanMove = true;
                     break;
                 case GameState.Paused:
                     break;
@@ -48,8 +46,8 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    
-    
+
+
     public static GameManager instance
     {
         get
@@ -74,6 +72,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+
         Invoke("Init", 1f);
     }
 
@@ -94,7 +93,7 @@ public class GameManager : MonoBehaviour
             }
             spawner.Spawn();
         }
-        
+
         //spawn in player{s}
         /*
         int numOfPlayers = FindObjectsOfType<Player>().Length;
@@ -111,18 +110,18 @@ public class GameManager : MonoBehaviour
         {
             switch (player.id)
             {
-                case"1":
+                case "1":
                     P1 = player;
                     break;
                 case "2":
                     P2 = player;
                     break;
             }
-        //Ensure players are frozen until we are in the playing state
-        player.CanMove = false;
+            //Ensure players are frozen until we are in the playing state
+            player.CanMove = false;
         }
-        
+
         CurrentState = GameState.Init;
-       
+
     }
 }
